@@ -26,31 +26,31 @@ export default function InicioPage() {
   const carouselItems: CarouselItem[] = [
     {
       id: 1,
-      image: "/placeholder.svg?height=400&width=600",
+      image: "assets/img/Espejo.jpg",
       title: "Un paseo inolvidable 🌳",
       description: "Momentos que atesoramos en el corazón",
     },
     {
       id: 2,
-      image: "/placeholder.svg?height=400&width=600",
+      image: "assets/img/TeAmo.jpg",
       title: "Nuestro primer día juntos",
       description: "El día que comenzó nuestra hermosa historia",
     },
     {
       id: 3,
-      image: "/placeholder.svg?height=400&width=600",
+      image: "assets/img/Paseo.jpg",
       title: "Celebrando nuestro amor",
       description: "Un día especial lleno de momentos mágicos",
     },
     {
       id: 4,
-      image: "/placeholder.svg?height=400&width=600",
+      image: "assets/img/Muelle.jpg",
       title: "Atardecer en la playa",
       description: "Contemplando juntos la belleza del horizonte",
     },
     {
       id: 5,
-      image: "/placeholder.svg?height=400&width=600",
+      image: "assets/img/Mivida.jp",
       title: "Nuestra primera cita",
       description: "Donde todo comenzó a florecer",
     },
