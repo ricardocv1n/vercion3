@@ -27,7 +27,7 @@ export default function InicioPage() {
     {
       id: 1,
       image: "assets/img/Espejo.jpg",
-      title: "Un paseo inolvidable 🌳",
+      title: "Un paseo inolvidable",
       description: "Momentos que atesoramos en el corazón",
     },
     {
