@@ -50,13 +50,13 @@ export default function InicioPage() {
     },
     {
       id: 5,
-      image: "/assets/img/Comienzo.jpg",
+      image: "/assets/img/comienzo.jpg",
       title: "Nuestra primera cita",
       description: "Donde todo comenzó a florecer",
     },
     {
       id: 6,
-      image: "/assets/img/Comienzo2.jpg",
+      image: "/assets/img/comienzo2.jpg",
       title: "Nuestra primera cita",
       description: "Donde todo comenzó a florecer",
     },
@@ -68,7 +68,7 @@ export default function InicioPage() {
     },
     {
       id: 8,
-      image: "/assets/img/navidad.jp",
+      image: "/assets/img/navidad.jpeg",
       title: "Nuestra primera cita",
       description: "Donde todo comenzó a florecer",
     },
