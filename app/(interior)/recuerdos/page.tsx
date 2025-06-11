@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import PageHeader from "@/components/page-header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -39,65 +39,15 @@ interface Place {
   type: "visitado" | "planeado" | "evento"
   date: string
   description: string
+  images?: string[] // Añadido para la galería de imágenes
 }
 
 export default function RecuerdosPage() {
-  const [milestones, setMilestones] = useState<Milestone[]>([
-    {
-      id: 1,
-      title: "Nuestro primer encuentro",
-      date: "15 de marzo de 2020",
-      description: "El día que cambió nuestras vidas para siempre",
-      fullDescription:
-        "Fue en el parque central, un día soleado de primavera. Nunca imaginé que una simple conversación se convertiría en el inicio de la historia más hermosa de mi vida.",
-      image: "/placeholder.svg?height=200&width=300",
-      category: "aniversario",
-    },
-    {
-      id: 2,
-      title: "Nuestro primer viaje juntos",
-      date: "20 de junio de 2020",
-      description: "Una aventura inolvidable a la playa",
-      fullDescription:
-        "Tres días mágicos en la costa, donde descubrimos que éramos el equipo perfecto. Cada atardecer, cada paseo por la orilla, cada momento compartido nos unió más.",
-      image: "/placeholder.svg?height=200&width=300",
-      category: "viaje",
-    },
-    {
-      id: 3,
-      title: "Mudanza a nuestro hogar",
-      date: "10 de enero de 2021",
-      description: "El día que construimos nuestro nido de amor",
-      fullDescription:
-        "Después de meses buscando, encontramos el lugar perfecto para comenzar nuestra vida juntos. Cada caja que desempacamos era un paso más hacia nuestro futuro compartido.",
-      image: "/placeholder.svg?height=200&width=300",
-      category: "hogar",
-    },
-  ])
+  // Estado para los hitos y lugares, inicializados con datos de localStorage o por defecto
+  const [milestones, setMilestones] = useState<Milestone[]>([])
+  const [places, setPlaces] = useState<Place[]>([])
 
-  const [places, setPlaces] = useState<Place[]>([
-    {
-      id: 1,
-      name: "Parque Central",
-      address: "Centro de Montería, Córdoba",
-      lat: 8.7479,
-      lng: -75.8814,
-      type: "visitado",
-      date: "15 de marzo de 2020",
-      description: "Donde nos conocimos por primera vez",
-    },
-    {
-      id: 2,
-      name: "Playa de Coveñas",
-      address: "Coveñas, Sucre",
-      lat: 9.4089,
-      lng: -75.6794,
-      type: "visitado",
-      date: "20 de junio de 2020",
-      description: "Nuestro primer viaje romántico",
-    },
-  ])
-
+  // Filtros y estados de UI
   const [milestoneFilter, setMilestoneFilter] = useState("todos")
   const [placeFilter, setPlaceFilter] = useState("todos")
   const [searchQuery, setSearchQuery] = useState("")
@@ -110,6 +60,7 @@ export default function RecuerdosPage() {
   const [deleteTarget, setDeleteTarget] = useState<{ type: "milestone" | "place"; id: number } | null>(null)
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null)
 
+  // Estado para el nuevo hito/lugar que se está creando o editando
   const [newMilestone, setNewMilestone] = useState({
     title: "",
     date: "",
@@ -127,7 +78,92 @@ export default function RecuerdosPage() {
     type: "visitado" as const,
     date: "",
     description: "",
+    images: [] as string[], // Inicializado como un array vacío
   })
+
+  // Cargar datos desde localStorage al montar el componente
+  useEffect(() => {
+    const savedMilestones = localStorage.getItem('milestones');
+    const savedPlaces = localStorage.getItem('places');
+
+    if (savedMilestones) {
+      setMilestones(JSON.parse(savedMilestones));
+    } else {
+      // Datos de ejemplo si no hay nada en localStorage
+      setMilestones([
+        {
+          id: 1,
+          title: "Nuestro primer encuentro",
+          date: "2020-03-15", // Formato YYYY-MM-DD para consistencia
+          description: "El día que cambió nuestras vidas para siempre",
+          fullDescription:
+            "Fue en el parque central, un día soleado de primavera. Nunca imaginé que una simple conversación se convertiría en el inicio de la historia más hermosa de mi vida.",
+          image: "https://placehold.co/300x200/FFDDC1/E85D04?text=Primer+Encuentro",
+          category: "aniversario",
+        },
+        {
+          id: 2,
+          title: "Nuestro primer viaje juntos",
+          date: "2020-06-20",
+          description: "Una aventura inolvidable a la playa",
+          fullDescription:
+            "Tres días mágicos en la costa, donde descubrimos que éramos el equipo perfecto. Cada atardecer, cada paseo por la orilla, cada momento compartido nos unió más.",
+          image: "https://placehold.co/300x200/D4EEF9/287CBB?text=Primer+Viaje",
+          category: "viaje",
+        },
+        {
+          id: 3,
+          title: "Mudanza a nuestro hogar",
+          date: "2021-01-10",
+          description: "El día que construimos nuestro nido de amor",
+          fullDescription:
+            "Después de meses buscando, encontramos el lugar perfecto para comenzar nuestra vida juntos. Cada caja que desempacamos era un paso más hacia nuestro futuro compartido.",
+          image: "https://placehold.co/300x200/E6F9D4/4CAF50?text=Nuestro+Hogar",
+          category: "hogar",
+        },
+      ]);
+    }
+
+    if (savedPlaces) {
+      setPlaces(JSON.parse(savedPlaces));
+    } else {
+      // Datos de ejemplo si no hay nada en localStorage
+      setPlaces([
+        {
+          id: 1,
+          name: "Parque Central",
+          address: "Centro de Montería, Córdoba",
+          lat: 8.7479,
+          lng: -75.8814,
+          type: "visitado",
+          date: "2020-03-15",
+          description: "Donde nos conocimos por primera vez",
+          images: ["https://placehold.co/300x200/FFDDC1/E85D04?text=Parque+Central+1", "https://placehold.co/300x200/FFDDC1/E85D04?text=Parque+Central+2"],
+        },
+        {
+          id: 2,
+          name: "Playa de Coveñas",
+          address: "Coveñas, Sucre",
+          lat: 9.4089,
+          lng: -75.6794,
+          type: "visitado",
+          date: "2020-06-20",
+          description: "Nuestro primer viaje romántico",
+          images: ["https://placehold.co/300x200/D4EEF9/287CBB?text=Coveñas+1", "https://placehold.co/300x200/D4EEF9/287CBB?text=Coveñas+2"],
+        },
+      ]);
+    }
+  }, []);
+
+  // Guardar datos en localStorage cada vez que milestones o places cambian
+  useEffect(() => {
+    localStorage.setItem('milestones', JSON.stringify(milestones));
+  }, [milestones]);
+
+  useEffect(() => {
+    localStorage.setItem('places', JSON.stringify(places));
+  }, [places]);
+
 
   const filteredPlaces = places.filter((place) => {
     const matchesFilter = placeFilter === "todos" || place.type === placeFilter
@@ -138,36 +174,54 @@ export default function RecuerdosPage() {
     return matchesFilter && matchesSearch
   })
 
+  // Función para añadir o actualizar un hito
   const handleAddMilestone = () => {
+    // Validación básica
+    if (!newMilestone.title || !newMilestone.date || !newMilestone.description) {
+      alert("Por favor, rellena los campos obligatorios: Título, Fecha y Descripción.");
+      return;
+    }
+
     if (editingMilestone) {
+      // Actualizar hito existente
       setMilestones(
         milestones.map((m) =>
           m.id === editingMilestone.id
             ? {
-                ...editingMilestone,
                 ...newMilestone,
-                image: newMilestone.image || "/placeholder.svg?height=200&width=300",
+                id: editingMilestone.id, // Asegurarse de mantener el ID original
+                image: newMilestone.image || "https://placehold.co/300x200/cccccc/000000?text=Sin+Imagen",
               }
             : m,
         ),
       )
     } else {
+      // Añadir nuevo hito
       const milestone: Milestone = {
-        id: Date.now(),
+        id: Date.now(), // Generar un ID único
         ...newMilestone,
-        image: newMilestone.image || "/placeholder.svg?height=200&width=300",
+        image: newMilestone.image || "https://placehold.co/300x200/cccccc/000000?text=Sin+Imagen",
       }
       setMilestones([...milestones, milestone])
     }
     resetMilestoneForm()
   }
 
+  // Función para añadir o actualizar un lugar
   const handleAddPlace = () => {
+    // Validación básica
+    if (!newPlace.name || !newPlace.address || !newPlace.date || !newPlace.description || newPlace.lat === 0 || newPlace.lng === 0) {
+      alert("Por favor, rellena los campos obligatorios (Nombre, Dirección, Fecha, Descripción) y selecciona una ubicación en el mapa.");
+      return;
+    }
+
     if (editingPlace) {
-      setPlaces(places.map((p) => (p.id === editingPlace.id ? { ...editingPlace, ...newPlace } : p)))
+      // Actualizar lugar existente
+      setPlaces(places.map((p) => (p.id === editingPlace.id ? { ...newPlace, id: editingPlace.id } : p)))
     } else {
+      // Añadir nuevo lugar
       const place: Place = {
-        id: Date.now(),
+        id: Date.now(), // Generar un ID único
         ...newPlace,
       }
       setPlaces([...places, place])
@@ -175,6 +229,7 @@ export default function RecuerdosPage() {
     resetPlaceForm()
   }
 
+  // Resetea el formulario de hitos y cierra el modal
   const resetMilestoneForm = () => {
     setNewMilestone({
       title: "",
@@ -188,6 +243,7 @@ export default function RecuerdosPage() {
     setShowMilestoneModal(false)
   }
 
+  // Resetea el formulario de lugares y cierra el modal
   const resetPlaceForm = () => {
     setNewPlace({
       name: "",
@@ -197,11 +253,13 @@ export default function RecuerdosPage() {
       type: "visitado",
       date: "",
       description: "",
+      images: [], // Limpiar imágenes al resetear
     })
     setEditingPlace(null)
     setShowPlaceModal(false)
   }
 
+  // Prepara el modal para editar un hito
   const handleEditMilestone = (milestone: Milestone) => {
     setEditingMilestone(milestone)
     setNewMilestone({
@@ -215,6 +273,7 @@ export default function RecuerdosPage() {
     setShowMilestoneModal(true)
   }
 
+  // Prepara el modal para editar un lugar
   const handleEditPlace = (place: Place) => {
     setEditingPlace(place)
     setNewPlace({
@@ -225,20 +284,24 @@ export default function RecuerdosPage() {
       type: place.type,
       date: place.date,
       description: place.description,
+      images: place.images || [], // Cargar imágenes existentes
     })
     setShowPlaceModal(true)
   }
 
+  // Prepara el modal de confirmación para eliminar un hito
   const handleDeleteMilestone = (id: number) => {
     setDeleteTarget({ type: "milestone", id })
     setShowDeleteModal(true)
   }
 
+  // Prepara el modal de confirmación para eliminar un lugar
   const handleDeletePlace = (id: number) => {
     setDeleteTarget({ type: "place", id })
     setShowDeleteModal(true)
   }
 
+  // Confirma y ejecuta la eliminación del hito o lugar
   const confirmDelete = () => {
     if (deleteTarget) {
       if (deleteTarget.type === "milestone") {
@@ -251,6 +314,7 @@ export default function RecuerdosPage() {
     setShowDeleteModal(false)
   }
 
+  // Callback del mapa para seleccionar una ubicación y pre-llenar el formulario del lugar
   const handlePlaceSelect = (lat: number, lng: number, address: string, name: string) => {
     setNewPlace((prev) => ({
       ...prev,
@@ -259,12 +323,13 @@ export default function RecuerdosPage() {
       address,
       name,
     }))
-    setShowPlaceModal(true)
+    setShowPlaceModal(true) // Abrir el modal de lugar después de la selección
   }
 
+  // Maneja acciones desde el mapa (rutas, galería)
   const handlePlaceAction = (action: string, place: Place) => {
     if (action === "route") {
-      // Open Google Maps with directions
+      // URL corregida para abrir Google Maps con direcciones
       const url = `https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lng}`
       window.open(url, "_blank")
     } else if (action === "gallery") {
@@ -273,6 +338,7 @@ export default function RecuerdosPage() {
     }
   }
 
+  // Opciones de filtro para hitos
   const milestoneFilters = [
     { key: "todos", label: "Todos" },
     { key: "aniversario", label: "Aniversario" },
@@ -282,6 +348,7 @@ export default function RecuerdosPage() {
     { key: "otro", label: "Otro" },
   ]
 
+  // Opciones de filtro para lugares
   const placeFilters = [
     { key: "todos", label: "Todos" },
     { key: "visitado", label: "Visitados" },
@@ -296,12 +363,12 @@ export default function RecuerdosPage() {
         description="Un compendio visual y emocional de los momentos clave de nuestra historia de amor"
       />
 
-      {/* Fun Facts Section */}
+      {/* Sección de Datos Curiosos */}
       <div className="mb-12">
         <FunFacts />
       </div>
 
-      {/* Timeline Section */}
+      {/* Sección de Hitos */}
       <div className="mb-12">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8">
           <h2 className="text-2xl font-bold text-pink-600 mb-4 md:mb-0">Hitos de Nuestro Amor</h2>
@@ -336,7 +403,7 @@ export default function RecuerdosPage() {
         />
       </div>
 
-      {/* Map Section */}
+      {/* Sección del Mapa */}
       <div className="mb-12">
         <h2 className="text-2xl font-bold text-pink-600 mb-6">Mapa de Lugares Especiales</h2>
         <GoogleMap
@@ -347,7 +414,7 @@ export default function RecuerdosPage() {
         />
       </div>
 
-      {/* Places List Section */}
+      {/* Sección de Lista de Lugares */}
       <div>
         <div className="flex flex-col md:flex-row justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-pink-600 mb-4 md:mb-0">Lista de Lugares Guardados</h2>
@@ -463,7 +530,7 @@ export default function RecuerdosPage() {
         </div>
       </div>
 
-      {/* Milestone Modal */}
+      {/* Modal para Hitos */}
       <Dialog open={showMilestoneModal} onOpenChange={setShowMilestoneModal}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -474,25 +541,27 @@ export default function RecuerdosPage() {
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="milestone-title">Título</Label>
+              <Label htmlFor="milestone-title">Título *</Label>
               <Input
                 id="milestone-title"
                 value={newMilestone.title}
                 onChange={(e) => setNewMilestone({ ...newMilestone, title: e.target.value })}
                 placeholder="Ej: Nuestro primer beso"
+                required
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="milestone-date">Fecha</Label>
+              <Label htmlFor="milestone-date">Fecha *</Label>
               <Input
                 id="milestone-date"
                 type="date"
                 value={newMilestone.date}
                 onChange={(e) => setNewMilestone({ ...newMilestone, date: e.target.value })}
+                required
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="milestone-category">Categoría</Label>
+              <Label htmlFor="milestone-category">Categoría *</Label>
               <select
                 id="milestone-category"
                 value={newMilestone.category}
@@ -500,6 +569,7 @@ export default function RecuerdosPage() {
                   setNewMilestone({ ...newMilestone, category: e.target.value as Milestone["category"] })
                 }
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                required
               >
                 <option value="aniversario">Aniversario</option>
                 <option value="viaje">Viaje</option>
@@ -509,12 +579,13 @@ export default function RecuerdosPage() {
               </select>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="milestone-description">Descripción</Label>
+              <Label htmlFor="milestone-description">Descripción *</Label>
               <Textarea
                 id="milestone-description"
                 value={newMilestone.description}
                 onChange={(e) => setNewMilestone({ ...newMilestone, description: e.target.value })}
                 placeholder="Descripción breve del momento..."
+                required
               />
             </div>
             <div className="grid gap-2">
@@ -547,7 +618,7 @@ export default function RecuerdosPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Place Modal */}
+      {/* Modal para Lugares */}
       <Dialog open={showPlaceModal} onOpenChange={setShowPlaceModal}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -558,30 +629,39 @@ export default function RecuerdosPage() {
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="place-name">Nombre</Label>
+              <Label htmlFor="place-name">Nombre *</Label>
               <Input
                 id="place-name"
                 value={newPlace.name}
                 onChange={(e) => setNewPlace({ ...newPlace, name: e.target.value })}
                 placeholder="Ej: Restaurante La Vista"
+                required
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="place-address">Dirección</Label>
+              <Label htmlFor="place-address">Dirección *</Label>
               <Input
                 id="place-address"
                 value={newPlace.address}
                 onChange={(e) => setNewPlace({ ...newPlace, address: e.target.value })}
                 placeholder="Dirección completa"
+                required
               />
+              {newPlace.lat !== 0 && newPlace.lng !== 0 && (
+                <p className="text-xs text-gray-500">Coordenadas: {newPlace.lat.toFixed(4)}, {newPlace.lng.toFixed(4)}</p>
+              )}
+               {newPlace.lat === 0 && newPlace.lng === 0 && (
+                <p className="text-xs text-red-500">Haz clic en el mapa para seleccionar coordenadas.</p>
+              )}
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="place-type">Tipo</Label>
+              <Label htmlFor="place-type">Tipo *</Label>
               <select
                 id="place-type"
                 value={newPlace.type}
                 onChange={(e) => setNewPlace({ ...newPlace, type: e.target.value as Place["type"] })}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                required
               >
                 <option value="visitado">Visitado</option>
                 <option value="planeado">Planeado</option>
@@ -589,21 +669,32 @@ export default function RecuerdosPage() {
               </select>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="place-date">Fecha</Label>
+              <Label htmlFor="place-date">Fecha *</Label>
               <Input
                 id="place-date"
                 type="date"
                 value={newPlace.date}
                 onChange={(e) => setNewPlace({ ...newPlace, date: e.target.value })}
+                required
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="place-description">Descripción</Label>
+              <Label htmlFor="place-description">Descripción *</Label>
               <Textarea
                 id="place-description"
                 value={newPlace.description}
                 onChange={(e) => setNewPlace({ ...newPlace, description: e.target.value })}
                 placeholder="Describe qué hace especial este lugar..."
+                required
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="place-images">URLs de imágenes (separadas por comas)</Label>
+              <Textarea
+                id="place-images"
+                value={newPlace.images.join(', ')}
+                onChange={(e) => setNewPlace({ ...newPlace, images: e.target.value.split(',').map(s => s.trim()).filter(s => s) })}
+                placeholder="https://ejemplo.com/imagen1.jpg, https://ejemplo.com/imagen2.png"
               />
             </div>
           </div>
@@ -618,7 +709,7 @@ export default function RecuerdosPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Modal */}
+      {/* Modal de Confirmación de Eliminación */}
       <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
         <DialogContent>
           <DialogHeader>
@@ -639,7 +730,7 @@ export default function RecuerdosPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Gallery Modal */}
+      {/* Modal de Galería de Imágenes */}
       <Dialog open={showGalleryModal} onOpenChange={setShowGalleryModal}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
@@ -647,17 +738,35 @@ export default function RecuerdosPage() {
             <DialogDescription>{selectedPlace?.address}</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center mb-4">
-              <p className="text-gray-500">Galería de imágenes del lugar</p>
-            </div>
-            <p className="text-gray-700">{selectedPlace?.description}</p>
+            {selectedPlace?.images && selectedPlace.images.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto">
+                {selectedPlace.images.map((imgUrl, index) => (
+                  <img
+                    key={index}
+                    src={imgUrl}
+                    alt={`${selectedPlace.name} - Imagen ${index + 1}`}
+                    className="w-full h-auto object-cover rounded-lg shadow-sm"
+                    // Fallback para imágenes rotas
+                    onError={(e) => {
+                      e.currentTarget.src = "https://placehold.co/300x200/cccccc/000000?text=Error+Carga+Imagen";
+                    }}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center mb-4">
+                <p className="text-gray-500">No hay imágenes disponibles para este lugar.</p>
+              </div>
+            )}
+            <p className="text-gray-700 mt-4">{selectedPlace?.description}</p>
             <p className="text-sm text-gray-500 mt-2">Visitado el: {selectedPlace?.date}</p>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowGalleryModal(false)}>
               Cerrar
             </Button>
-            <Button className="bg-pink-600 hover:bg-pink-700">Compartir ubicación</Button>
+            {/* Puedes añadir una funcionalidad de compartir si es necesario */}
+            {/* <Button className="bg-pink-600 hover:bg-pink-700">Compartir ubicación</Button> */}
           </DialogFooter>
         </DialogContent>
       </Dialog>
